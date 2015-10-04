@@ -49,6 +49,7 @@
       embedded_kube: "{{ openshift_master_embedded_kube | default(None) }}"
       embedded_dns: "{{ openshift_master_embedded_dns | default(None) }}"
       dns_port: "{{ openshift_master_dns_port | default(None) }}"
+      dns_domain: "{{ openshift_config_dns_domain | default('cluster.local') }}"
       bind_addr: "{{ openshift_master_bind_addr | default(None) }}"
       portal_net: "{{ openshift_master_portal_net | default(None) }}"
       session_max_seconds: "{{ openshift_master_session_max_seconds | default(None) }}"
@@ -80,6 +81,12 @@
       master_count: "{{ openshift_master_count | default(None) }}"
       controller_lease_ttl: "{{ osm_controller_lease_ttl | default(None) }}"
       master_image: "{{ osm_image | default(None) }}"
+
+- name: OpenContrail settings
+  set_fact:
+    openshift.common.use_openshift_sdn: false
+    osm_network_plugin_name: opencontrail
+  when: sdn_network_plugin_name is defined and sdn_network_plugin_name == "opencontrail"
 
 - name: Install Master package
   action: "{{ ansible_pkg_mgr }} name={{ openshift.common.service_type }}-master{{ openshift_version  }} state=present"
@@ -128,6 +135,11 @@
 
 - name: Re-gather package dependent master facts
   openshift_facts:
+    role: dns
+    local_facts:
+      ip: "{{ openshift_master_cluster_vip | default(openshift.common.ip, true) | default(None) }}"
+      domain: "{{ openshift_config_dns_domain | default('cluster.local') }}"
+  when: openshift.master.embedded_dns
 
 - name: Create config parent directory if it does not exist
   file:

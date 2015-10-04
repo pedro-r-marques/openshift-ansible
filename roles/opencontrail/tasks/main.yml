@@ -1,0 +1,48 @@
+---
+
+- assert:
+    that:
+      - "'masters' in groups"
+      - "'nodes' in groups"
+
+- name: Host IP address configuration (from inventory)
+  include: interface_inventory_facts.yml
+  when: opencontrail_ipaddr is defined
+
+- name: Host IP address configuration (from physical interface)
+  include: interface_ansible_facts.yml
+  when: "opencontrail_ipaddr is not defined and 'ipv4' in hostvars[inventory_hostname]['ansible_' + opencontrail_host_interface]"
+
+- name: Host IP address configuration (from vhost0)
+  include: vhost_ansible_facts.yml
+  when: "opencontrail_ipaddr is not defined and 'ansible_vhost0' in hostvars[inventory_hostname] and 'ipv4' in ansible_vhost0"
+
+- assert:
+    that:
+      - opencontrail_host_interface is defined
+      - opencontrail_host_ipaddr is defined
+
+- include_vars: openshift.yml
+  when: openshift is defined or 'openshift' in hostvars[groups['masters'][0]]
+
+- include: docker_config.yml
+
+- name: Build kernel module
+  include: kmod.yml
+  when: opencontrail_host_use_vrouter
+
+- name: Install vrouter
+  include: vrouter.yml
+  when: opencontrail_host_use_vrouter
+
+- name: Install compute nodes
+  include: nodes.yml
+  when: inventory_hostname in groups['nodes']
+
+- name: Install gateways
+  include: gateways.yml
+  when: "'gateways' in groups and inventory_hostname in groups['gateways']"
+
+- name: Install master
+  include: masters.yml
+  when: inventory_hostname in groups['masters']

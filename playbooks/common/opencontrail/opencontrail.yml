@@ -1,0 +1,8 @@
+---
+- name: OpenContrail playbook
+  hosts: all
+  sudo: yes
+  roles:
+    - {role: openshift_facts, when: "(inventory_hostname in groups['masters'] or inventory_hostname in groups['nodes'])"}
+    - opencontrail
+    - opencontrail_provision

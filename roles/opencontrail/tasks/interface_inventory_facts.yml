@@ -1,0 +1,7 @@
+---
+- name: IP address information (from inventory / hostvars)
+  set_fact:
+    opencontrail_host_address: "{{ opencontrail_ipaddr | ipaddr('address') }}"
+    opencontrail_host_netmask: "{{ opencontrail_ipaddr | ipaddr('netmask') }}"
+    opencontrail_host_prefixlen: "{{ opencontrail_ipaddr | ipaddr('subnet') }}"
+    opencontrail_host_ipaddr: "{{ opencontrail_ipaddr }}"

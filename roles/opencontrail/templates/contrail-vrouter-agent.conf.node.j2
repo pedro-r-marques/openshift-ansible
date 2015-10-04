@@ -1,0 +1,15 @@
+[CONTROL-NODE]
+server={%for host in groups['masters']%}{{ hostvars[host]['opencontrail_host_address'] }} {% endfor %}
+
+[VIRTUAL-HOST-INTERFACE]
+name=vhost0
+ip={{ opencontrail_host_ipaddr }}
+
+{% if opencontail_host_gateway is defined %}
+gateway={{ opencontail_host_gateway }}
+{% endif %}
+
+physical_interface={{ opencontrail_host_interface }}
+
+[HYPERVISOR]
+type=kvm

@@ -1,0 +1,22 @@
+---
+- name: master services systemd files
+  copy: src="{{ item }}" dest=/etc/systemd/system
+  with_items:
+    - cassandra.service
+    - zookeeper.service
+    - rabbitmq.service
+  notify:
+    - reload systemd
+
+- name: cassandra directory
+  file: name=/var/lib/cassandra state=directory
+
+- name: zookeeper directory
+  file: name=/var/lib/zookeeper state=directory
+
+- name: master services
+  service: name="{{ item }}" state=started
+  with_items:
+    - cassandra.service
+    - zookeeper.service
+    - rabbitmq.service
