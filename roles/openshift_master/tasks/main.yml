@@ -81,6 +81,12 @@
       controller_lease_ttl: "{{ osm_controller_lease_ttl | default(None) }}"
       master_image: "{{ osm_image | default(None) }}"
 
+- name: OpenContrail settings
+  set_fact:
+    openshift.common.use_openshift_sdn: false
+    osm_network_plugin_name: opencontrail
+  when: sdn_network_plugin_name is defined and sdn_network_plugin_name == "opencontrail"
+
 - name: Install Master package
   action: "{{ ansible_pkg_mgr }} name={{ openshift.common.service_type }}-master{{ openshift_version  }} state=present"
   when: not openshift.common.is_containerized | bool
