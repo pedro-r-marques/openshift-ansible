@@ -24,7 +24,6 @@
     that:
       - opencontrail_all_service_addresses is defined
       - opencontrail_all_kube_config_dir is defined
-      - opencontrail_all_kube_manifest_dir is defined
 
 - include: docker_config.yml
 

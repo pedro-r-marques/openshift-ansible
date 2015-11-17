@@ -55,7 +55,7 @@
     state: latest
 
 - name: Install plugin
-  pip: name=opencontrail-kubelet"{% if opencontrail_build_http_proxy %} extra_args='--proxy={{ opencontrail_build_http_proxy }}'{% endif %}"
+  pip: name=opencontrail-kubelet extra_args="{% if opencontrail_build_http_proxy %}'--proxy={{ opencontrail_build_http_proxy }}'{% endif %}"
 
 - name: Create plugin directory
   file:
