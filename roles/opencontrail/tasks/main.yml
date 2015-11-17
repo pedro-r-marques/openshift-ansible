@@ -5,31 +5,31 @@
       - "'masters' in groups"
       - "'nodes' in groups"
 
-- name: Host IP address configuration (from inventory)
-  include: interface_inventory_facts.yml
-  when: opencontrail_ipaddr is defined
-
-- name: Host IP address configuration (from physical interface)
-  include: interface_ansible_facts.yml
-  when: "opencontrail_ipaddr is not defined and 'ipv4' in hostvars[inventory_hostname]['ansible_' + opencontrail_host_interface]"
-
-- name: Host IP address configuration (from vhost0)
-  include: vhost_ansible_facts.yml
-  when: "opencontrail_ipaddr is not defined and 'ansible_vhost0' in hostvars[inventory_hostname] and 'ipv4' in ansible_vhost0"
-
-- assert:
+- name: Assert that interface facts are defined
+  assert:
     that:
       - opencontrail_host_interface is defined
       - opencontrail_host_ipaddr is defined
+      - opencontrail_host_address is defined
+      - opencontrail_host_gateway is defined
 
 - include_vars: openshift.yml
   when: openshift is defined or 'openshift' in hostvars[groups['masters'][0]]
+
+- include_vars: kubernetes.yml
+  when: opencontrail_cluster_type == "kubernetes"
+
+- name: Assert that cluster dependent vars are defined
+  assert:
+    that:
+      - opencontrail_all_service_addresses is defined
+      - opencontrail_all_kube_config_dir is defined
+      - opencontrail_all_kube_manifest_dir is defined
 
 - include: docker_config.yml
 
 - name: Build kernel module
   include: kmod.yml
-  when: opencontrail_host_use_vrouter
 
 - name: Install vrouter
   include: vrouter.yml

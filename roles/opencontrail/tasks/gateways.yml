@@ -26,4 +26,3 @@
 
 - name: Start vrouter agent
   service: name=contrail-vrouter-agent enabled=yes state=started
-

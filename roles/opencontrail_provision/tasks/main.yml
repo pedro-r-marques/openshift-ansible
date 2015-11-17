@@ -1,7 +1,10 @@
 ---
-- name: Pull config image
-  command: docker pull opencontrail/config:2.20
-  delegate_to: "{{ groups['masters'][0] }}"
+
+- name: Assert that input variables are defined.
+  assert:
+    that:
+      - opencontrail_host_address is defined
+      - opencontrail_all_service_addresses is defined
 
 - name: controller provisioning
   include: master.yml

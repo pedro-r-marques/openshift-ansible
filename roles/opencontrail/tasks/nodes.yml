@@ -16,13 +16,20 @@
   copy: src=contrail-vrouter-agent.service dest=/etc/systemd/system
   notify:
     - reload systemd
+  when: not (ansible_distribution == "Ubuntu" and ansible_distribution_major_version|int < 15)
+
+- name: VRouter agent upstart
+  copy:
+    src: contrail-vrouter-agent.upstart
+    dest: /etc/init/contrail-vrouter-agent.conf
+    mode: 0644
+  when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version|int < 15
 
 - name: Enable vhost0 interface
   command: ifup vhost0
 
 - name: Start vrouter agent
   service: name=contrail-vrouter-agent enabled=yes state=started
-
 
 # python-pip is provided by the epel repository on CentOS 7.
 - name: epel 7
@@ -48,7 +55,7 @@
     state: latest
 
 - name: Install plugin
-  pip: name=opencontrail-kubelet
+  pip: name=opencontrail-kubelet"{% if opencontrail_build_http_proxy %} extra_args='--proxy={{ opencontrail_build_http_proxy }}'{% endif %}"
 
 - name: Create plugin directory
   file:

@@ -4,7 +4,7 @@
   set_fact:
     opencontrail_host_address: "{{ hostvars[inventory_hostname]['ansible_' + opencontrail_host_interface]['ipv4']['address'] }}"
     opencontrail_host_netmask: "{{ hostvars[inventory_hostname]['ansible_' + opencontrail_host_interface]['ipv4']['netmask'] }}"
-    opencontrail_host_gateway: "{{ hostvars[inventory_hostname]['ansible_' + opencontrail_host_interface]['ipv4']['gateway'] if 'gateway' in hostvars[inventory_hostname]['ansible_' + opencontrail_host_interface]['ipv4'] else None }}"
+    opencontrail_host_gateway: "{{ ansible_default_ipv4.gateway if 'interface' in ansible_default_ipv4 and ansible_default_ipv4.interface == opencontrail_host_interface else None }}"
 
 - set_fact:
     opencontrail_host_prefixlen: "{{ opencontrail_host_netmask | netmask2prefixlen }}"

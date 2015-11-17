@@ -7,7 +7,6 @@
     - gateways
   sudo: yes
   roles:
-    - openshift_facts
     - opencontrail_facts
     - opencontrail
   vars:

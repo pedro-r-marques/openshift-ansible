@@ -4,12 +4,10 @@ server={%for host in groups['masters']%}{{ hostvars[host]['opencontrail_host_add
 [VIRTUAL-HOST-INTERFACE]
 name=vhost0
 ip={{ opencontrail_host_ipaddr }}
-
-{% if opencontail_host_gateway is defined %}
-gateway={{ opencontail_host_gateway }}
-{% endif %}
-
 physical_interface={{ opencontrail_host_interface }}
+{% if opencontrail_host_gateway -%}
+gateway={{ opencontrail_host_gateway }}
+{% endif -%}
 
 [HYPERVISOR]
 type=kvm

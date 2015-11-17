@@ -1,0 +1,18 @@
+---
+- include_vars: openshift.yml
+  when: opencontrail_cluster_type == "openshift"
+
+- include_vars: kubernetes.yml
+  when: opencontrail_cluster_type == "kubernetes"
+
+- name: Host IP address configuration (from inventory)
+  include: interface_inventory_facts.yml
+  when: opencontrail_ipaddr is defined
+
+- name: Host IP address configuration (from physical interface)
+  include: interface_ansible_facts.yml
+  when: "opencontrail_ipaddr is not defined and 'ipv4' in hostvars[inventory_hostname]['ansible_' + opencontrail_host_interface]"
+
+- name: Host IP address configuration (from vhost0)
+  include: vhost_ansible_facts.yml
+  when: "opencontrail_ipaddr is not defined and 'ansible_vhost0' in hostvars[inventory_hostname] and 'ipv4' in ansible_vhost0"

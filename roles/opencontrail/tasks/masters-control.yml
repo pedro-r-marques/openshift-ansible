@@ -4,12 +4,17 @@
   notify:
     - restart contrail-control
 
+- name: Install control-node manifest
+  copy: src=contrail-control.manifest dest="{{ opencontrail_all_kube_manifest_dir }}"
+  when: not opencontrail_use_systemd
+
 - name: Install control-node service
   copy: src=contrail-control.service dest=/etc/systemd/system
   notify:
     - reload systemd
+  when: opencontrail_use_systemd
 
 - name: Start control-node service
   service: name="contrail-control" state=started
-
+  when: opencontrail_use_systemd
 

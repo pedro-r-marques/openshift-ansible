@@ -4,7 +4,7 @@
     path: "{{ opencontrail_host_kernel_install_dir }}/usr/bin"
     state: directory
   delegate_to: "{{ groups['masters'][0] }}"
-
+  run_once: true
 
 - name: Create install tree (kmod)
   file:
