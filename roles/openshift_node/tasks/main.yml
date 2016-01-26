@@ -6,7 +6,7 @@
 
 - name: OpenContrail settings
   set_fact:
-    openshift_node_kubelet_args: {'read-only-port': ['10255'], 'resolv-conf': []}
+    openshift_node_kubelet_args: {'read-only-port': ['10255'], 'resolv-conf': [""]}
     osn_cluster_dns_ip: "{{ openshift.node.portal_net | ipaddr('net') | ipaddr(10) | ipaddr('address') }}"
   when: sdn_network_plugin_name is defined and sdn_network_plugin_name == "opencontrail"
 
