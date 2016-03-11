@@ -4,6 +4,12 @@
     msg: "SELinux is disabled, This deployment type requires that SELinux is enabled."
   when: (not ansible_selinux or ansible_selinux.status != 'enabled') and deployment_type in ['enterprise', 'online', 'atomic-enterprise', 'openshift-enterprise']
 
+- name: OpenContrail settings
+  set_fact:
+    openshift_node_kubelet_args: {'read-only-port': ['10255'], 'resolv-conf': [""]}
+    osn_cluster_dns_ip: "{{ openshift.node.portal_net | ipaddr('net') | ipaddr(10) | ipaddr('address') }}"
+  when: sdn_network_plugin_name is defined and sdn_network_plugin_name == "opencontrail"
+
 - name: Set node facts
   openshift_facts:
     role: "{{ item.role }}"
@@ -18,6 +24,8 @@
       dns_ip: "{{ openshift_dns_ip
                   | default(openshift_master_cluster_vip
                   | default(None if openshift.common.version_gte_3_1_or_1_1 | bool else openshift_node_first_master_ip | default(None, true), true), true) }}"
+      use_openshift_sdn: "{{ sdn_network_plugin_name is not defined or sdn_network_plugin_name == 'redhat/openshift-ovs-subnet'}}"
+      sdn_network_plugin_name: "{{ sdn_network_plugin_name }}"
   - role: node
     local_facts:
       annotations: "{{ openshift_node_annotations | default(none) }}"
